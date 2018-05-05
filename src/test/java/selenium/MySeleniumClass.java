@@ -3,9 +3,19 @@ package selenium;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
 
 public class MySeleniumClass {
+    public enum DriverTypes {
+        CHROME,
+        FIREFOX,
+        IE,
+        EDGE
+    }
+
+
     public boolean connected;
 
     public String pageTitle = "";
@@ -13,13 +23,24 @@ public class MySeleniumClass {
 
     WebDriver driver = null;
 
-    public MySeleniumClass() {
+    public MySeleniumClass(DriverTypes dt) {
         try {
-            // Set the location of the chrome driver
-            System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
-
-            // Load the chrome driver
-            driver = new ChromeDriver();
+            switch (dt) {
+                case EDGE:
+                    System.setProperty("webdriver.edge.driver","src/test/resources/MicrosoftWebDriver.exe");
+                    driver = new EdgeDriver();
+                    break;
+                case CHROME:
+                    System.setProperty("webdriver.chrome.driver","src/test/resources/chromedriver.exe");
+                    driver = new ChromeDriver();
+                    break;
+                case IE:
+                    System.setProperty("webdriver.ie.driver","src/test/resources/IEDriverServer.exe");
+                    driver = new InternetExplorerDriver();
+                    break;
+                default:
+                    throw new Exception("Unsupported Driver Provided");
+            }
 
             driver.get(url);
             pageTitle = driver.getTitle();
@@ -27,6 +48,7 @@ public class MySeleniumClass {
             this.connected = true;
         } catch (Exception e) {
             this.connected = false;
+            e.printStackTrace();
         }
     }
 

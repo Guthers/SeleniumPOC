@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class MyTestClass {
-    private MySeleniumClass selenium = new MySeleniumClass();
+    private MySeleniumClass selenium = new MySeleniumClass(MySeleniumClass.DriverTypes.IE);
 
     private String ID_COURSE_ENTRY = "courseCode";
     private String ID_SEMESTER_DROPDOWN = "btn-semester";
