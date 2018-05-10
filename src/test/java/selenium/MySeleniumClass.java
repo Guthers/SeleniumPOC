@@ -5,6 +5,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.concurrent.TimeUnit;
 
 
 public class MySeleniumClass {
@@ -15,13 +19,12 @@ public class MySeleniumClass {
         EDGE
     }
 
-
     public boolean connected;
 
-    public String pageTitle = "";
-    private String url = "https://uqfinal.com/";
+    public String pageTitle;
 
     WebDriver driver = null;
+    WebDriverWait waitDriver = null;
 
     public MySeleniumClass(DriverTypes dt) {
         try {
@@ -42,7 +45,9 @@ public class MySeleniumClass {
                     throw new Exception("Unsupported Driver Provided");
             }
 
-            driver.get(url);
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+            waitDriver = new WebDriverWait(driver, 10);
             pageTitle = driver.getTitle();
 
             this.connected = true;
@@ -62,19 +67,35 @@ public class MySeleniumClass {
     //courseCode
     public boolean elementExistsByID(String id) {
         if (driver != null) {
-            if (!driver.getCurrentUrl().equals(url)) {
-                driver.get(url);
-            }
             return driver.findElement(By.id(id)).isDisplayed();
+        }
+        return false;
+    }
+
+    public boolean waitUntilElementExistsByClass(String cls) {
+        if (driver != null) {
+            waitDriver.until(ExpectedConditions.elementToBeClickable(By.className(cls)));
+            return true;
         }
         return false;
     }
 
     public boolean elementClickById(String id) {
         if (elementExistsByID(id)) {
-            driver.findElement(By.id(id)).click();
+            waitDriver.until(ExpectedConditions.elementToBeClickable(By.id(id))).click();
+//            driver.findElement(By.id(id)).click();
+            return true;
         }
         return false;
+    }
+
+    public void gotoURL(String url) {
+        if (!driver.getCurrentUrl().equals(url)) {
+            driver.get(url);
+            pageTitle = driver.getTitle();
+        } else {
+            driver.navigate().refresh();
+        }
     }
 
     public boolean textFieldEnter(String id, String text) {
@@ -86,14 +107,9 @@ public class MySeleniumClass {
         return false;
     }
 
-    public Boolean pageHasText(String text) {
-        return driver.findElement(By.xpath("//*[contains(text(), '" + text + "')]")).isDisplayed();
-    }
-
     public boolean urlEndsIn(String text) {
         return driver.getCurrentUrl().endsWith(text);
     }
-
 
 
 
